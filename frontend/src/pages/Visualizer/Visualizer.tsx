@@ -128,7 +128,7 @@ export default function Visualizer() {
       if (intervalRef.current) clearInterval(intervalRef.current);
     }
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [playing, speed, events.length]);
+  }, [playing, speed, events.length, stepsPerTick]);
 
   const run = useCallback(async () => {
     setLoading(true); setError(null); setPlaying(false); setStep(0);

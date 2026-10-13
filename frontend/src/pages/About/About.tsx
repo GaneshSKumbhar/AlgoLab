@@ -3,11 +3,11 @@ import { Cpu, BookOpen, Brain, GitBranch, BarChart3, FlaskConical } from 'lucide
 import { Badge } from '../../components/ui';
 
 const TECH_STACK = [
-  { layer: 'Frontend', tech: 'React 18 + TypeScript + Vite', color: 'text-blue-400' },
+  { layer: 'Frontend', tech: 'React + TypeScript + Vite', color: 'text-blue-400' },
   { layer: 'Styling', tech: 'Tailwind CSS v3 + Custom Design System', color: 'text-cyan-400' },
   { layer: 'Charts', tech: 'Recharts', color: 'text-indigo-400' },
   { layer: 'Icons', tech: 'Lucide React', color: 'text-purple-400' },
-  { layer: 'Backend', tech: 'Python 3.13 + FastAPI + Uvicorn', color: 'text-emerald-400' },
+  { layer: 'Backend', tech: 'Python + FastAPI + Uvicorn', color: 'text-emerald-400' },
   { layer: 'API', tech: 'REST (JSON) — Axios client', color: 'text-amber-400' },
   { layer: 'Testing', tech: 'pytest (backend) + Vitest (frontend)', color: 'text-rose-400' },
 ];
@@ -16,7 +16,7 @@ const FEATURES = [
   { icon: Brain, title: 'Paradigm Advisor', desc: 'Rule-based algorithm recommendation from problem characteristics. Fully explainable, no ML/AI.' },
   { icon: GitBranch, title: 'Live Visualizer', desc: 'Step through actual algorithm execution. Play, pause, step forward/back. 8 visualizer types.' },
   { icon: BarChart3, title: 'Benchmark Lab', desc: 'Empirical benchmarking at increasing input sizes. Real operation counts, not fabricated data.' },
-  { icon: BookOpen, title: 'Algorithm Library', desc: '20+ algorithms with complexity analysis, advantages, limitations, and related algorithms.' },
+  { icon: BookOpen, title: 'Algorithm Library', desc: '20 algorithms with complexity analysis, advantages, limitations, and related algorithms.' },
   { icon: FlaskConical, title: 'Case Studies', desc: '4 real-world scenarios demonstrating how DAA paradigms apply to practical problems.' },
   { icon: Cpu, title: 'Tracer System', desc: 'Standardized event system — every algorithm emits typed events for visualization and metrics.' },
 ];

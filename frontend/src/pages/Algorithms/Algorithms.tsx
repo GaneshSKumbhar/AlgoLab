@@ -45,7 +45,7 @@ export default function Algorithms() {
       <SectionHeader
         badge="Algorithm Library"
         title="All Algorithms"
-        subtitle="Browse 20+ implementations with complexity analysis, visualizations, and benchmarks"
+        subtitle="Browse 20 implementations with complexity analysis, visualizations, and benchmarks"
       />
 
       {/* Filters */}
