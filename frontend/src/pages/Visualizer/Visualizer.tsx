@@ -782,8 +782,8 @@ function MetricsPanel({ metrics, result }: {
   );
 }
 
-function NumericListField({ id, label, value, onChange }: {
-  id?: string; label: string; value: number[]; onChange: (values: number[]) => void;
+function NumericListField({ id, label, value, onChange, integerOnly = true }: {
+  id?: string; label: string; value: number[]; onChange: (values: number[]) => void; integerOnly?: boolean;
 }) {
   const formattedValue = value.join(', ');
   const [draft, setDraft] = useState(formattedValue);
@@ -794,7 +794,7 @@ function NumericListField({ id, label, value, onChange }: {
   const commit = () => {
     const tokens = draft.trim().split(/[\s,;]+/).filter(Boolean);
     const values = tokens.map(Number);
-    const isValid = tokens.length > 0 && values.every(Number.isInteger);
+    const isValid = tokens.length > 0 && values.every(number => Number.isFinite(number) && (!integerOnly || Number.isInteger(number)));
     setInvalid(!isValid);
     if (isValid) onChange(values);
   };
@@ -806,7 +806,9 @@ function NumericListField({ id, label, value, onChange }: {
         value={draft} onChange={event => { setDraft(event.target.value); setInvalid(false); }} onBlur={commit}
         placeholder="e.g. 38, 27, 43 or 38 27 43" aria-invalid={invalid} />
       <p className={`mt-1 text-xs ${invalid ? 'text-red-400' : 'text-gray-500'}`}>
-        {invalid ? 'Enter whole numbers separated by spaces, commas, semicolons, or new lines.' : 'Separate whole numbers with spaces, commas, semicolons, or pasted lines.'}
+        {invalid
+          ? `Enter ${integerOnly ? 'whole ' : ''}numbers separated by spaces, commas, semicolons, or new lines.`
+          : `Separate ${integerOnly ? 'whole ' : ''}numbers with spaces, commas, semicolons, or pasted lines.`}
       </p>
     </div>
   );
@@ -856,10 +858,10 @@ function InputEditor({ algoId, input, onChange }: {
     return (
       <div className="space-y-3">
         <div>
-          <NumericListField label="Weights" value={(input.weights as number[]) ?? []} onChange={value => update('weights', value)} />
+          <NumericListField label="Weights" value={(input.weights as number[]) ?? []} onChange={value => update('weights', value)} integerOnly={algoId !== 'fractional_knapsack'} />
         </div>
         <div>
-          <NumericListField label="Values" value={(input.values as number[]) ?? []} onChange={value => update('values', value)} />
+          <NumericListField label="Values" value={(input.values as number[]) ?? []} onChange={value => update('values', value)} integerOnly={algoId !== 'fractional_knapsack'} />
         </div>
         <div>
           <label className="text-xs text-gray-400 mb-1 block">Capacity</label>

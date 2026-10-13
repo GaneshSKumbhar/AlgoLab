@@ -40,13 +40,14 @@ _Visualise algorithms step by step 🎬 · Get explainable paradigm recommendati
 8. [🧮 Algorithm Coverage](#-algorithm-coverage)
 9. [📂 Project Structure](#-project-structure)
 10. [🚀 Quick Start](#-quick-start)
-11. [🧪 Testing](#-testing)
-12. [🛠️ Troubleshooting](#️-troubleshooting)
-13. [🎨 Design Notes](#-design-notes)
-14. [🛣️ Roadmap](#️-roadmap)
-15. [🤝 Contributing](#-contributing)
-16. [👤 Author](#-author)
-17. [📜 License](#-license)
+11. [☁️ Free Deployment](#️-free-deployment)
+12. [🧪 Testing](#-testing)
+13. [🛠️ Troubleshooting](#️-troubleshooting)
+14. [🎨 Design Notes](#-design-notes)
+15. [🛣️ Roadmap](#️-roadmap)
+16. [🤝 Contributing](#-contributing)
+17. [👤 Author](#-author)
+18. [📜 License](#-license)
 
 ---
 
@@ -375,9 +376,12 @@ npm run dev
 
 ### 🔑 Environment Variables
 
-| Variable       | 📍 Location     | 📝 Purpose                  | 💡 Example              |
-| -------------- | --------------- | --------------------------- | ----------------------- |
-| `VITE_API_URL` | `frontend/.env` | Base URL of the backend API | `http://localhost:8000` |
+| Variable                 | 📍 Location     | 📝 Purpose                                      | 💡 Example                                      |
+| ------------------------ | --------------- | ----------------------------------------------- | ----------------------------------------------- |
+| `VITE_API_URL`           | `frontend/.env` | Base URL of the backend API during local work   | `http://localhost:8000`                         |
+| `ALGOLAB_AUTH_SECRET`    | `backend/.env`  | Long random secret for signed login sessions    | generate a different random value for deployment |
+| `DATABASE_URL`           | `backend/.env`  | Hosted PostgreSQL connection for deployed users | `postgresql://...?...sslmode=require`           |
+| `FRONTEND_ORIGINS`       | `backend/.env`  | Comma-separated browser origins for split hosting | `https://example.com`                         |
 
 ### 🧰 Handy Commands
 
@@ -388,6 +392,29 @@ npm run dev
 | `npm run dev`                               | `frontend/` | Start the Vite dev server      |
 | `npm run build`                             | `frontend/` | Production build               |
 | `npm test`                                  | `frontend/` | Frontend tests (if configured) |
+
+---
+
+## ☁️ Free Deployment
+
+The repository contains a production `Dockerfile` that builds the React interface and serves it from the same FastAPI service. This removes cross-origin API delays and means the public app uses one URL.
+
+For a free public demo, use **Koyeb** for the web service and **Neon** for the PostgreSQL database:
+
+1. Create a free Neon project, then copy its **pooled PostgreSQL connection string**. Keep `sslmode=require` in the URL.
+2. In Koyeb, create a **Web Service** from `https://github.com/GaneshSKumbhar/AlgoLab`, choose the `main` branch, and select the repository `Dockerfile` builder.
+3. Select the free Web Service size, expose port `8000` as HTTP on route `/`, and set the HTTP health-check path to `/health`.
+4. Add these Koyeb **secret** environment variables (never commit them):
+
+   ```text
+   DATABASE_URL=<your Neon pooled PostgreSQL connection string>
+   ALGOLAB_AUTH_SECRET=<a long, unique random value>
+   ```
+
+5. Deploy. Koyeb will build the image from GitHub. Open the generated `*.koyeb.app` URL and create the first AlgoLab account from the Sign in page.
+6. To avoid the free Koyeb instance's one-hour idle sleep, create one free UptimeRobot HTTP monitor for `https://<your-app>.koyeb.app/health` with the five-minute interval.
+
+The first database connection after Neon suspends its compute can take a little longer, but the dashboard itself stays on one origin and does not wait for a separate frontend service. Koyeb's free tier is suitable for coursework and demonstrations; use a paid always-on service for a production system with availability guarantees.
 
 ---
 

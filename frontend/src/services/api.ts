@@ -3,7 +3,9 @@
  */
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
+// In the deployment image FastAPI serves this SPA, so production requests stay
+// same-origin. A separate API URL can still be supplied for other deployments.
+const BASE_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? 'http://localhost:8000' : '');
 
 export const api = axios.create({
   baseURL: BASE_URL,
