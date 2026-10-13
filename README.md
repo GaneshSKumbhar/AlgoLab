@@ -1,108 +1,497 @@
-# AlgoLab
+<div align="center">
 
-> **Interactive Design & Analysis of Algorithms Platform**
+# 🧪 AlgoLab
 
-AlgoLab is a premium‑grade, full‑stack educational platform that helps students and professionals explore algorithms, get paradigm recommendations, visualise step‑by‑step execution, and benchmark performance across inputs.
+### 🚀 Interactive Design & Analysis of Algorithms Platform
+
+_Visualise algorithms step by step 🎬 · Get explainable paradigm recommendations 🧭 · Benchmark performance against theory 📊_
+
+<br/>
+
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-Vite-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-Frontend-3178C6?logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-06B6D4?logo=tailwindcss&logoColor=white)
+![pytest](https://img.shields.io/badge/Tests-pytest-0A9EDC?logo=pytest&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+[![GitHub stars](https://img.shields.io/github/stars/GaneshSKumbhar/AlgoLab?style=social)](https://github.com/GaneshSKumbhar/AlgoLab/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/GaneshSKumbhar/AlgoLab?style=social)](https://github.com/GaneshSKumbhar/AlgoLab/fork)
+[![GitHub issues](https://img.shields.io/github/issues/GaneshSKumbhar/AlgoLab)](https://github.com/GaneshSKumbhar/AlgoLab/issues)
+
+<br/>
+
+[✨ Features](#-features) · [📸 Screenshots](#-screenshots) · [🏗️ Architecture](#️-architecture) · [📂 Structure](#-project-structure) · [🚀 Quick Start](#-quick-start) · [🧪 Testing](#-testing) · [🛠️ Troubleshooting](#️-troubleshooting) · [🤝 Contributing](#-contributing)
+
+</div>
+
+---
+
+## 📑 Table of Contents
+
+1. [📖 Overview](#-overview)
+2. [🎯 Why AlgoLab?](#-why-algolab)
+3. [✨ Features](#-features)
+4. [📸 Screenshots](#-screenshots)
+5. [🧱 Tech Stack](#-tech-stack)
+6. [🏗️ Architecture](#️-architecture)
+7. [🧭 How the Paradigm Advisor Works](#-how-the-paradigm-advisor-works)
+8. [🧮 Algorithm Coverage](#-algorithm-coverage)
+9. [📂 Project Structure](#-project-structure)
+10. [🚀 Quick Start](#-quick-start)
+11. [🧪 Testing](#-testing)
+12. [🛠️ Troubleshooting](#️-troubleshooting)
+13. [🎨 Design Notes](#-design-notes)
+14. [🛣️ Roadmap](#️-roadmap)
+15. [🤝 Contributing](#-contributing)
+16. [👤 Author](#-author)
+17. [📜 License](#-license)
+
+---
+
+## 📖 Overview
+
+**AlgoLab** is a full-stack educational platform built for the _Design and Analysis of Algorithms_ course. Rather than teaching one algorithm at a time, AlgoLab starts from the **problem**: describe what you need to solve, and the platform recommends a suitable paradigm, runs candidate algorithms, animates their execution, and measures how they actually scale.
+
+It answers the three questions every algorithms student faces:
+
+| ❓ Question                                                                                                                      | 🛠️ AlgoLab feature         |
+| -------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| **Which paradigm fits this problem?** Divide and conquer, dynamic programming, greedy, backtracking, flow, or NP-hard territory? | 🧭 Paradigm Advisor        |
+| **What is the algorithm actually doing?**                                                                                        | 🎬 Step-by-step Visualizer |
+| **Does it scale the way theory says?**                                                                                           | 📊 Benchmark Lab           |
+
+> 📄 The full project proposal and specification is included in the repo as [`AlgoLab_Project_Document.docx`](AlgoLab_Project_Document.docx).
+
+---
+
+## 🎯 Why AlgoLab?
+
+- 🧠 **Problem-first learning**: choose a strategy for a _fresh_ problem, the core skill the course targets.
+- 🔍 **Transparent**: the advisor is rule-based and explainable, with no black-box guessing.
+- 🎬 **Honest visualisation**: the animation _is_ the real execution trace, not a mock-up.
+- 📈 **Evidence-driven**: compare measured runtime and operation counts with theoretical bounds.
+- 🌍 **Applied**: case studies link algorithms to realistic scenarios like routing and compression.
 
 ---
 
 ## ✨ Features
 
-- **Paradigm Advisor** – Rule‑based engine that suggests the most suitable algorithmic paradigm based on problem characteristics.
-- **Algorithm Visualizer** – Animated execution traces with colour‑coded highlights, metrics, and step controls.
-- **Benchmark Lab** – Run bulk benchmarks, view statistical tables and compare runtime/operations.
-- **Case Studies** – Real‑world problem walkthroughs (routing, timetabling, compression, …).
-- **Responsive UI** – Glass‑morphism cards, smooth micro‑animations, dark‑mode ready.
-- **Authentication** – Secure sign‑in/out with JWT.
-- **Comprehensive API** – FastAPI backend with OpenAPI docs.
+### 🧭 Paradigm Advisor
+
+- Rule-based, fully **explainable** engine that recommends the most suitable algorithmic paradigm.
+- Takes problem characteristics (structure, overlapping subproblems, greedy-choice property, constraints) and explains _why_ a paradigm fits.
+
+### 🎬 Algorithm Visualizer
+
+- Animated execution traces with **colour-coded highlights**.
+- Live **metrics** (comparisons, swaps, steps) alongside the animation.
+- ▶️ Play, ⏸️ pause, ⏭️ step controls for classroom-friendly walkthroughs.
+
+### 📊 Benchmark Lab
+
+- Run **bulk benchmarks** across input sizes and input types.
+- Compare **runtime and operation counts** between algorithms.
+- Inspect results in **sortable tables** and charts.
+
+### 🌍 Case Studies
+
+- Real-world walkthroughs: 🚚 routing, 🗓️ timetabling, 🗜️ compression, and more.
+- Shows how several algorithms combine to solve one practical problem.
+
+### 📚 Algorithm Library
+
+- Browse every algorithm, **filter by category and paradigm**, and open a detail page for each.
+
+### 🔐 Authentication
+
+- Secure sign-in and sign-out powered by **JWT**.
+
+### ⚡ Developer-Friendly API
+
+- **FastAPI** backend with auto-generated, interactive **OpenAPI** docs at `/docs`.
+
+### 🎨 Modern UI
+
+- Responsive **glass-morphism** cards, smooth micro-animations, and **dark-mode ready** styling.
+- ♿ Semantic HTML, ARIA labels and keyboard-friendly navigation.
 
 ---
 
 ## 📸 Screenshots
 
-| ![Dashboard](images/dashboard.png) |
-| *Dashboard overview with algorithm categories and quick links.* |
+### 🏠 Dashboard
 
-| ![Algorithm List](images/algorithm.png) |
-| *Browse all algorithms, filter by category and paradigm.* |
+![Dashboard](images/dashboard.png)
+_Dashboard overview with algorithm categories and quick links._
 
-| ![Visualizer](images/visualizer.png) |
-| *Step‑by‑step visualisation of an algorithm execution trace.* |
+### 📚 Algorithm Library
 
-| ![Benchmark Lab](images/benchmarks.png) |
-| *Run benchmarks, view results in sortable tables and charts.* |
+![Algorithm List](images/algorithm.png)
+_Browse all algorithms, filter by category and paradigm._
 
-| ![Paradigm Advisor](images/paradigm.png) |
-| *Get explainable paradigm recommendations for a given problem.* |
+### 🎬 Visualizer
 
-| ![Case Studies](images/caseStudies.png) |
-| *Interactive case‑study walkthroughs for real‑world scenarios.* |
+![Visualizer](images/visualizer.png)
+_Step-by-step visualisation of an algorithm execution trace._
 
-| ![Login Page](images/login.png) |
-| *Secure sign‑in and account creation.* |
+### 📊 Benchmark Lab
+
+![Benchmark Lab](images/benchmarks.png)
+_Run benchmarks, view results in sortable tables and charts._
+
+### 🧭 Paradigm Advisor
+
+![Paradigm Advisor](images/paradigm.png)
+_Get explainable paradigm recommendations for a given problem._
+
+### 🌍 Case Studies
+
+![Case Studies](images/caseStudies.png)
+_Interactive case-study walkthroughs for real-world scenarios._
+
+### ℹ️ About
+
+![About](images/about.png)
+_About page describing the project and its goals._
+
+### 🔐 Login
+
+![Login Page](images/login.png)
+_Secure sign-in and account creation._
 
 ---
 
-## 🛠️ Installation & Running Locally
+## 🧱 Tech Stack
 
-### Prerequisites
+| 🧩 Layer            | 🛠️ Technology                         |
+| ------------------- | ------------------------------------- |
+| 🎨 Frontend         | React, Vite, TypeScript, Tailwind CSS |
+| ⚙️ Backend          | Python 3.10+, FastAPI, Uvicorn        |
+| 🔐 Auth             | JWT (JSON Web Tokens)                 |
+| 🧪 Testing          | pytest                                |
+| 🧹 Linting          | Oxlint (TypeScript), flake8 (Python)  |
+| 📦 Package managers | npm, pip                              |
 
-- **Node.js** >= 18
-- **Python** >= 3.10
-- **PowerShell** (Windows) or any POSIX‑compatible shell
+---
 
-### Backend (FastAPI)
+## 🏗️ Architecture
+
+```
+┌────────────────────────────┐      HTTP / JSON       ┌────────────────────────────────┐
+│  🎨 React + Vite Frontend   │ ─────────────────────► │  ⚙️ FastAPI Backend             │
+│                            │                        │                                │
+│  🏠 Dashboard               │                        │  🔐 auth/       JWT utilities   │
+│  📚 Algorithms              │ ◄───────────────────── │  🧮 algorithms/ sorting·graph·dp│
+│  🎬 Visualizer              │   traces · metrics ·   │  📊 benchmark/  runner + models │
+│  📊 Benchmark Lab           │   recommendations      │  🧭 advisor/    paradigm rules  │
+│  🧭 Paradigm Advisor        │                        │                                │
+└────────────────────────────┘                        └────────────────────────────────┘
+```
+
+**💡 Core design principle:** every algorithm emits a uniform **execution trace** (comparisons, swaps, visits, relaxations, and so on). That one trace feeds three consumers:
+
+1. 🎬 the **Visualizer** animation,
+2. 📟 the live **metrics panel**,
+3. 📊 the **Benchmark** counters.
+
+What you see animated is exactly what was executed and measured.
+
+---
+
+## 🧭 How the Paradigm Advisor Works
+
+The advisor walks a transparent decision tree, asking structural questions about the problem:
+
+| 🤔 Question                                                                  | ✅ If yes                            | 📌 Typical algorithms                |
+| ---------------------------------------------------------------------------- | ------------------------------------ | ------------------------------------ |
+| Does the problem split into independent subproblems of the same type?        | 🔪 Divide and Conquer                | Merge sort, quick sort, closest pair |
+| Do subproblems overlap, with optimal substructure?                           | 🧩 Dynamic Programming               | Knapsack, LCS, matrix chain          |
+| Does a locally best choice lead to a global optimum?                         | 🎯 Greedy                            | MST, Dijkstra, Huffman coding        |
+| Is it a constraint-satisfaction or search problem with early-failure checks? | 🔙 Backtracking                      | N-Queens, Sudoku, graph colouring    |
+| Can it be modelled as flow on a capacitated graph?                           | 🌊 Network Flow                      | Matching, assignment                 |
+| Is it known to be NP-hard?                                                   | 🧱 Exact + approximation / heuristic | TSP, vertex cover, clique            |
+
+Every recommendation comes with a **plain-language explanation**, making it easy to defend in a viva. 🎓
+
+---
+
+## 🧮 Algorithm Coverage
+
+| 📁 Package              | 🔧 Examples                          |
+| ----------------------- | ------------------------------------ |
+| 🔢 `algorithms/sorting` | Quick sort, merge sort, heap sort    |
+| 🕸️ `algorithms/graph`   | BFS, DFS, Dijkstra, and more         |
+| 🧩 `algorithms/dp`      | Knapsack, longest common subsequence |
+
+> 🗺️ Additional modules (network flow, NP-completeness reductions, backtracking suites) are listed in the [Roadmap](#️-roadmap) and in the project document.
+
+---
+
+## 📂 Project Structure
+
+### 🗂️ Root Directory
+
+```
+AlgoLab/
+├── 📁 .git/                          # Git history (ignored in releases)
+├── 📄 .gitignore                     # Files/folders excluded from version control
+├── 📄 .oxlintrc.json                 # Oxlint configuration for TypeScript linting
+├── 📘 AlgoLab_Project_Document.docx  # Detailed project proposal and specification
+├── 📄 README.md                      # Project overview (you are reading it!)
+├── 🖼️ image.png                      # Original screenshot
+├── 📁 images/                        # 📸 Screenshots used in this README
+│   ├── about.png
+│   ├── algorithm.png
+│   ├── benchmarks.png
+│   ├── caseStudies.png
+│   ├── dashboard.png
+│   ├── login.png
+│   ├── paradigm.png
+│   └── visualizer.png
+├── 📁 backend/                       # 🐍 Python FastAPI server
+├── 📁 frontend/                      # ⚛️ React + Vite SPA
+├── 📁 docs/                          # Additional documentation (could host MkDocs/Sphinx)
+└── 📁 .docx-review/                  # Review artefacts for the .docx spec (optional)
+```
+
+### 🐍 Backend (`backend/`)
+
+```
+backend/
+├── 📁 app/                           # Core application package
+│   ├── 📄 __init__.py
+│   ├── 📄 main.py                    # 🚪 FastAPI entry point (uvicorn runs this)
+│   ├── 📁 auth/                      # 🔐 JWT authentication utilities
+│   ├── 📁 algorithms/                # 🧮 Algorithm implementations
+│   │   ├── 📁 sorting/               #    quicksort, mergesort, heap-sort
+│   │   ├── 📁 graph/                 #    BFS, DFS, Dijkstra, etc.
+│   │   └── 📁 dp/                    #    knapsack, longest common subsequence
+│   ├── 📁 benchmark/                 # 📊 Benchmark runner and result models
+│   └── 📁 advisor/                   # 🧭 Paradigm-recommendation engine
+├── 📁 tests/                         # 🧪 pytest test suite
+│   ├── 📄 test_sorting.py
+│   ├── 📄 test_graph.py
+│   └── …
+├── 📄 requirements.txt               # Python dependencies
+└── 📁 venv/                          # Virtual environment (gitignored)
+```
+
+### ⚛️ Frontend (`frontend/`)
+
+```
+frontend/
+├── 📁 public/                        # Static assets served as-is
+│   ├── 🎨 favicon.svg                # Custom gradient "A" favicon
+│   └── 🎨 icons.svg
+├── 📁 src/                           # Source code (TypeScript, JSX, CSS)
+│   ├── 📁 assets/                    # Images imported directly in components
+│   ├── 📁 components/                # ♻️ Reusable UI components (cards, badges, ...)
+│   │   └── 📁 ui/                    #    Design-system primitives
+│   ├── 📁 pages/                     # 📄 Page-level components (router targets)
+│   │   ├── 📁 Algorithms/            #    📚 List and detail views
+│   │   │   ├── 📄 Algorithms.tsx
+│   │   │   └── 📄 AlgorithmDetail.tsx
+│   │   ├── 📁 BenchmarkLab/          #    📊 Benchmark UI
+│   │   ├── 📁 ParadigmAdvisor/       #    🧭 Advisor UI
+│   │   └── 📁 Visualizer/            #    🎬 Visualisation UI
+│   ├── 📁 services/                  # 🔌 API wrapper (src/services/api.ts)
+│   ├── 📄 App.tsx                    # Root React component + router
+│   ├── 📄 main.tsx                   # ReactDOM entry point
+│   └── 📄 index.css                  # Global Tailwind imports + custom styles
+├── 📄 .env.example                   # Template env file (VITE_API_URL etc.)
+├── 📄 package.json                   # NPM dependencies and scripts
+├── 📄 tailwind.config.js             # Tailwind configuration (dark mode, colours)
+├── 📄 vite.config.ts                 # Vite configuration (React plugin)
+└── 📄 tsconfig.json                  # TypeScript compiler options
+```
+
+---
+
+## 🚀 Quick Start
+
+### ✅ Prerequisites
+
+| Tool       | Version                                 |
+| ---------- | --------------------------------------- |
+| 🟢 Node.js | 18 or later                             |
+| 🐍 Python  | 3.10 or later                           |
+| 🔧 Git     | any recent version                      |
+| 💻 Shell   | PowerShell (Windows) or any POSIX shell |
+
+### 1️⃣ Clone the repository
+
+```bash
+git clone https://github.com/GaneshSKumbhar/AlgoLab.git
+cd AlgoLab
+```
+
+### 2️⃣ Start the backend (FastAPI) 🐍
+
+**🪟 Windows (PowerShell)**
 
 ```powershell
 cd backend
-# Create a virtual environment if not present
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
-The interactive OpenAPI docs are available at `http://localhost:8000/docs`.
+**🍎🐧 macOS / Linux**
 
-### Front‑end (React + Vite)
+```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
+
+📖 Interactive API docs: <http://localhost:8000/docs>
+
+### 3️⃣ Start the frontend (React + Vite) ⚛️
+
+**🪟 Windows (PowerShell)**
 
 ```powershell
 cd frontend
-Copy-Item .env.example .env   # adjust VITE_API_URL if needed
+Copy-Item .env.example .env    # adjust VITE_API_URL if needed
 npm install
 npm run dev
 ```
 
-Open `http://localhost:5173` in a browser. The app should load without the previous "white screen" error.
+**🍎🐧 macOS / Linux**
+
+```bash
+cd frontend
+cp .env.example .env           # adjust VITE_API_URL if needed
+npm install
+npm run dev
+```
+
+🌐 Open <http://localhost:5173> in your browser.
+
+### 🔑 Environment Variables
+
+| Variable       | 📍 Location     | 📝 Purpose                  | 💡 Example              |
+| -------------- | --------------- | --------------------------- | ----------------------- |
+| `VITE_API_URL` | `frontend/.env` | Base URL of the backend API | `http://localhost:8000` |
+
+### 🧰 Handy Commands
+
+| Command                                     | 📁 Run in   | What it does                   |
+| ------------------------------------------- | ----------- | ------------------------------ |
+| `uvicorn app.main:app --reload --port 8000` | `backend/`  | Start API with hot reload      |
+| `pytest -q`                                 | `backend/`  | Run backend tests quietly      |
+| `npm run dev`                               | `frontend/` | Start the Vite dev server      |
+| `npm run build`                             | `frontend/` | Production build               |
+| `npm test`                                  | `frontend/` | Frontend tests (if configured) |
 
 ---
 
-## ✅ Testing
+## 🧪 Testing
+
+### 🐍 Backend
 
 ```powershell
 cd backend
-.\venv\Scripts\Activate.ps1
+.\venv\Scripts\Activate.ps1      # macOS/Linux: source venv/bin/activate
 pytest -q
 ```
 
-Frontend unit tests (if added) can be run with `npm test`.
+### ⚛️ Frontend
+
+```bash
+cd frontend
+npm test
+```
+
+### 🧹 Linting
+
+```bash
+# 🐍 Python
+flake8 backend
+
+# ⚛️ TypeScript (Oxlint, configured in .oxlintrc.json)
+cd frontend && npm run lint
+```
+
+---
+
+## 🛠️ Troubleshooting
+
+| 🐞 Problem                                              | 💡 Fix                                                                                                                           |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| ⬜ **White screen** in the browser                      | Make sure the backend is running, `frontend/.env` exists, and `VITE_API_URL` points to it. Check the browser console for errors. |
+| 🚫 `Activate.ps1 cannot be loaded` on Windows           | Run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` in PowerShell, then activate again.                                    |
+| 🔌 Frontend cannot reach the API (CORS / network error) | Confirm backend is on port `8000` and the URL in `.env` matches. Restart `npm run dev` after editing `.env`.                     |
+| 📦 `ModuleNotFoundError` in backend                     | Activate the virtual environment and re-run `pip install -r requirements.txt`.                                                   |
+| 🔒 Port already in use                                  | Change the port, e.g. `uvicorn app.main:app --reload --port 8001`, and update `VITE_API_URL`.                                    |
 
 ---
 
 ## 🎨 Design Notes
 
-- **Favicon** – A custom SVG favicon (`public/favicon.svg`) featuring a stylised, gradient “A” that matches the app’s teal‑purple colour scheme.
-- **Styling** – Uses Tailwind‑CSS for rapid utility classes, with glass‑morphism components and subtle hover animations.
-- **Accessibility** – Semantic HTML, proper ARIA labels, and keyboard‑friendly navigation.
+- 🎨 **Favicon**: custom SVG (`frontend/public/favicon.svg`) with a stylised gradient "A" matching the teal-purple theme.
+- 🪟 **Styling**: Tailwind CSS utilities with glass-morphism components and subtle hover animations.
+- ♿ **Accessibility**: semantic HTML, proper ARIA labels, keyboard-friendly navigation.
+- 🌗 **Theming**: dark-mode ready colour tokens.
+
+---
+
+## 🛣️ Roadmap
+
+- [ ] 🌊 Network flow module (Ford-Fulkerson with residual graph and min-cut view)
+- [ ] 🧱 NP-completeness lab (3-SAT to Clique reduction visualiser, ILP models)
+- [ ] 🔙 Backtracking suite (N-Queens, Sudoku, graph colouring)
+- [ ] 🆚 Side-by-side algorithm comparison with synchronised timelines
+- [ ] 📄 Export benchmark reports as PDF and CSV
+- [ ] 👩‍🏫 Instructor mode with auto-graded exercises
+- [ ] 🐳 Docker setup for one-command deployment
+- [ ] ⚙️ CI pipeline (lint, tests) with GitHub Actions
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please fork the repo, create a feature branch, and open a pull request. Follow the existing linting rules (`oxc` for TypeScript, `flake8` for Python).
+Contributions are welcome! 🎉
+
+1. 🍴 **Fork** the repository
+2. 🌿 Create a feature branch: `git checkout -b feature/your-feature`
+3. 🧹 Follow the linting rules (**Oxlint** for TypeScript, **flake8** for Python)
+4. 🧪 Add or update tests where relevant
+5. 💬 Commit with a clear message: `git commit -m "feat: add your feature"`
+6. 🚀 Push and open a **Pull Request**
+
+🐛 Found a bug or have an idea? [Open an issue](https://github.com/GaneshSKumbhar/AlgoLab/issues).
+
+---
+
+## 👤 Author
+
+**Ganesh Kumbhar**
+
+- 🐙 GitHub: [@GaneshSKumbhar](https://github.com/GaneshSKumbhar)
+- 📦 Repository: [GaneshSKumbhar/AlgoLab](https://github.com/GaneshSKumbhar/AlgoLab)
+
+🎓 Built as a course project for **CS3212: Design and Analysis of Algorithms**, Vishwakarma Institute of Technology.
 
 ---
 
 ## 📜 License
 
-MIT © 2024‑2026 Ganesh Kumbhar
+Distributed under the **MIT License**.
+
+MIT © 2024-2026 **Ganesh Kumbhar**
+
+---
+
+<div align="center">
+
+### ⭐ If AlgoLab helped you, please star the repo! ⭐
+
+Made with ❤️ for algorithm learners everywhere
+
+</div>
