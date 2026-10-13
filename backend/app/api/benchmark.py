@@ -1,7 +1,8 @@
 """
 Benchmark API routes.
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from app.auth.service import current_user
 from app.models.schemas import BenchmarkRequest, BenchmarkResponse
 from app.benchmark.runner import benchmark_sorting, benchmark_graph, benchmark_dp
 
@@ -9,7 +10,7 @@ router = APIRouter(prefix="/api", tags=["benchmark"])
 
 
 @router.post("/benchmark", response_model=BenchmarkResponse)
-def run_benchmark(req: BenchmarkRequest):
+def run_benchmark(req: BenchmarkRequest, _: str = Depends(current_user)):
     if not req.algorithms:
         raise HTTPException(status_code=400, detail="At least one algorithm required.")
     if not req.input_sizes:

@@ -1,9 +1,10 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, BookOpen, GitBranch, BarChart3,
   Brain, FlaskConical, Info, Menu, X, Cpu
 } from 'lucide-react';
+import { useAuth } from '../../auth/AuthContext';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, exact: true },
@@ -16,7 +17,9 @@ const navItems = [
 ];
 
 export default function Navbar() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const { authenticated, username, signOut } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-surface-900/90 backdrop-blur-md border-b border-surface-600/50">
@@ -49,6 +52,7 @@ export default function Navbar() {
                 {label}
               </NavLink>
             ))}
+            {authenticated ? <button onClick={() => { signOut(); navigate('/'); }} className="ml-2 text-xs text-gray-400 hover:text-white">Sign out {username}</button> : <NavLink to="/login" className="ml-2 btn-secondary text-sm">Sign in</NavLink>}
           </div>
 
           {/* Mobile menu button */}

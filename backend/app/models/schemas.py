@@ -6,18 +6,29 @@ from typing import Any, Optional
 from pydantic import BaseModel, Field
 
 
+class AuthRequest(BaseModel):
+    username: str = Field(..., min_length=3, max_length=32, pattern=r"^[A-Za-z0-9_]+$")
+    password: str = Field(..., min_length=8, max_length=128)
+
+
+class AuthResponse(BaseModel):
+    access_token: str
+    token_type: str
+    username: str
+
+
 # ── Visualize ─────────────────────────────────────────────────────────────────
 
 class SortRequest(BaseModel):
     algorithm: str = Field(..., description="Algorithm ID: merge_sort | quick_sort | randomized_quick_sort | linear_search | binary_search")
-    array: list[int] = Field(..., min_length=1, max_length=200)
+    array: list[int] = Field(..., min_length=1, max_length=100)
     target: Optional[int] = None  # for search algorithms
 
 
 class GraphRequest(BaseModel):
     algorithm: str
-    nodes: list[str]
-    edges: list[tuple[str, str, float]] = []
+    nodes: list[str] = Field(max_length=30)
+    edges: list[tuple[str, str, float]] = Field(default=[], max_length=100)
     adjacency: dict[str, list[str]] = {}   # unweighted
     start: str = ""
     end: str = ""
@@ -42,8 +53,8 @@ class DPRequest(BaseModel):
 
 class BacktrackRequest(BaseModel):
     algorithm: str
-    n: int = Field(8, ge=1, le=15)
-    max_solutions: int = Field(5, ge=1, le=20)
+    n: int = Field(8, ge=1, le=10)
+    max_solutions: int = Field(5, ge=1, le=10)
 
 
 class GreedyRequest(BaseModel):

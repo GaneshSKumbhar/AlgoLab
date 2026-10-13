@@ -19,3 +19,4 @@ frontend/.env.*
 # Local review and generated files
 .docx-review/
 *.log
+backend/algolab.db

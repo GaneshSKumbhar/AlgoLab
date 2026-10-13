@@ -1,7 +1,8 @@
 """
 API Routes — /api/algorithms and /api/visualize
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from app.auth.service import current_user
 from app.algorithms.registry import ALGORITHMS
 from app.models.schemas import (
     SortRequest, GraphRequest, DPRequest, BacktrackRequest,
@@ -25,7 +26,7 @@ def get_algorithm(algo_id: str):
 
 
 @router.post("/visualize/sort", response_model=VisualizeResponse)
-def visualize_sort(req: SortRequest):
+def visualize_sort(req: SortRequest, _: str = Depends(current_user)):
     tracer = Tracer()
     try:
         if req.algorithm == "merge_sort":
@@ -67,7 +68,7 @@ def visualize_sort(req: SortRequest):
 
 
 @router.post("/visualize/graph", response_model=VisualizeResponse)
-def visualize_graph(req: GraphRequest):
+def visualize_graph(req: GraphRequest, _: str = Depends(current_user)):
     tracer = Tracer()
     try:
         if req.algorithm == "bfs":
@@ -119,7 +120,7 @@ def visualize_graph(req: GraphRequest):
 
 
 @router.post("/visualize/dp", response_model=VisualizeResponse)
-def visualize_dp(req: DPRequest):
+def visualize_dp(req: DPRequest, _: str = Depends(current_user)):
     tracer = Tracer()
     try:
         if req.algorithm == "knapsack_01":
@@ -163,7 +164,7 @@ def visualize_dp(req: DPRequest):
 
 
 @router.post("/visualize/backtrack", response_model=VisualizeResponse)
-def visualize_backtrack(req: BacktrackRequest):
+def visualize_backtrack(req: BacktrackRequest, _: str = Depends(current_user)):
     tracer = Tracer()
     try:
         if req.algorithm == "n_queens":
@@ -190,7 +191,7 @@ def visualize_backtrack(req: BacktrackRequest):
 
 
 @router.post("/visualize/greedy", response_model=VisualizeResponse)
-def visualize_greedy(req: GreedyRequest):
+def visualize_greedy(req: GreedyRequest, _: str = Depends(current_user)):
     tracer = Tracer()
     try:
         if req.algorithm == "activity_selection":

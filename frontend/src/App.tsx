@@ -8,10 +8,14 @@ import BenchmarkLab from './pages/BenchmarkLab/BenchmarkLab';
 import ParadigmAdvisor from './pages/ParadigmAdvisor/ParadigmAdvisor';
 import CaseStudies from './pages/CaseStudies/CaseStudies';
 import About from './pages/About/About';
+import Login from './pages/Login/Login';
+import { AuthProvider } from './auth/AuthContext';
+import { RequireAuth } from './auth/RequireAuth';
 
 export default function App() {
   return (
     <BrowserRouter>
+      <AuthProvider>
       <div className="min-h-screen bg-surface-900">
         <Navbar />
         <main className="pt-16">
@@ -19,15 +23,17 @@ export default function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/algorithms" element={<Algorithms />} />
             <Route path="/algorithms/:id" element={<AlgorithmDetail />} />
-            <Route path="/visualizer" element={<Visualizer />} />
-            <Route path="/visualizer/:id" element={<Visualizer />} />
-            <Route path="/benchmark" element={<BenchmarkLab />} />
-            <Route path="/advisor" element={<ParadigmAdvisor />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/visualizer" element={<RequireAuth><Visualizer /></RequireAuth>} />
+            <Route path="/visualizer/:id" element={<RequireAuth><Visualizer /></RequireAuth>} />
+            <Route path="/benchmark" element={<RequireAuth><BenchmarkLab /></RequireAuth>} />
+            <Route path="/advisor" element={<RequireAuth><ParadigmAdvisor /></RequireAuth>} />
             <Route path="/case-studies" element={<CaseStudies />} />
             <Route path="/about" element={<About />} />
           </Routes>
         </main>
       </div>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

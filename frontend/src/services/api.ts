@@ -11,6 +11,28 @@ export const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('algolab_token');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+export interface AuthSession {
+  access_token: string;
+  token_type: string;
+  username: string;
+}
+
+export async function register(username: string, password: string): Promise<AuthSession> {
+  const { data } = await api.post('/api/auth/register', { username, password });
+  return data;
+}
+
+export async function login(username: string, password: string): Promise<AuthSession> {
+  const { data } = await api.post('/api/auth/login', { username, password });
+  return data;
+}
+
 // ── Algorithms ────────────────────────────────────────────────────────────────
 
 export async function fetchAlgorithms() {

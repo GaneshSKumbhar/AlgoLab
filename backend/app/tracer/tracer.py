@@ -58,9 +58,12 @@ class Tracer:
     The algorithm calls tracer.emit(...) to record events.
     """
 
+    MAX_TRACE_EVENTS = 1_500
+
     def __init__(self) -> None:
         self.events: list[TraceEvent] = []
         self._step = 0
+        self._omitted_events = 0
         self.metrics: dict[str, int] = {
             "comparisons": 0,
             "swaps": 0,
@@ -85,6 +88,9 @@ class Tracer:
     ) -> None:
         self._step += 1
         self._update_metrics(event_type)
+        if len(self.events) >= self.MAX_TRACE_EVENTS:
+            self._omitted_events += 1
+            return
         event = TraceEvent(
             step=self._step,
             type=event_type,
@@ -115,7 +121,12 @@ class Tracer:
             self.metrics["backtrack_steps"] += 1
 
     def get_events(self) -> list[dict]:
-        return [e.model_dump() for e in self.events]
+        events = [e.model_dump() for e in self.events]
+        if self._omitted_events:
+            events.append(TraceEvent(step=self._step, type=EventType.MESSAGE, message=f"Trace limited to {self.MAX_TRACE_EVENTS:,} events; {self._omitted_events:,} intermediate events omitted for responsive playback.").model_dump())
+        return events
 
     def get_metrics(self) -> dict[str, int]:
-        return dict(self.metrics)
+        metrics = dict(self.metrics)
+        metrics["events_omitted"] = self._omitted_events
+        return metrics

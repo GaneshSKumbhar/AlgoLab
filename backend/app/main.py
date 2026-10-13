@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.algorithms import router as algo_router
 from app.api.benchmark import router as bench_router
 from app.api.advisor import router as advisor_router
+from app.api.auth import router as auth_router
 
 app = FastAPI(
     title="AlgoLab API",
@@ -25,6 +26,7 @@ app.add_middleware(
 app.include_router(algo_router)
 app.include_router(bench_router)
 app.include_router(advisor_router)
+app.include_router(auth_router)
 
 
 @app.get("/")

@@ -28,6 +28,15 @@ npm run dev
 
 Open `http://localhost:5173`. Interactive API documentation is available at `http://localhost:8000/docs`.
 
+## Sign in and run a test case
+
+1. Open the app and choose **Sign in**.
+2. Select **Create an account** and use a username plus a password of at least 8 characters.
+3. Open **Visualizer**, choose an algorithm, and replace the sample values under **Input Configuration** with your own test data.
+4. Select **Run My Input**. Long traces are capped at 1,500 visual events and playback automatically advances several events at once for long runs; the displayed metrics still reflect the complete algorithm execution.
+
+For a public deployment, set the `ALGOLAB_AUTH_SECRET` environment variable to a unique long random value before starting the API.
+
 ## Verification
 
 ```powershell

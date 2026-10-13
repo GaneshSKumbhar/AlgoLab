@@ -94,12 +94,13 @@ export default function Visualizer() {
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [speed, setSpeed] = useState(400); // ms per step
+  const [speed, setSpeed] = useState(60); // ms per animation tick
   const [activeTab, setActiveTab] = useState('visualizer');
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const cfg = ALGO_CONFIG[algoId] ?? ALGO_CONFIG['merge_sort'];
   const currentEvent = events[step] ?? null;
+  const stepsPerTick = Math.max(1, Math.ceil(events.length / 300));
 
   // Sync URL param
   useEffect(() => {
@@ -120,7 +121,7 @@ export default function Visualizer() {
       intervalRef.current = setInterval(() => {
         setStep(s => {
           if (s >= events.length - 1) { setPlaying(false); return s; }
-          return s + 1;
+          return Math.min(events.length - 1, s + stepsPerTick);
         });
       }, speed);
     } else {
@@ -190,6 +191,7 @@ export default function Visualizer() {
           {/* Input editor */}
           <div className="glass p-4">
             <h3 className="text-sm font-semibold text-gray-300 mb-3">Input Configuration</h3>
+            <p className="text-xs text-gray-500 mb-3">Enter your own test case below. Interactive traces are limited to safe sizes so results stay fast.</p>
             <InputEditor algoId={algoId} input={input} onChange={setInput} />
           </div>
 
@@ -201,7 +203,7 @@ export default function Visualizer() {
             className="btn-primary w-full justify-center py-3"
           >
             {loading ? <Spinner size={16} /> : <Play size={16} />}
-            {loading ? 'Running...' : 'Run Algorithm'}
+            {loading ? 'Running your input...' : 'Run My Input'}
           </button>
 
           {error && <Alert type="error">{error}</Alert>}
@@ -282,15 +284,15 @@ export default function Visualizer() {
 
                   {/* Speed */}
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-gray-500">Speed</span>
+                    <span className="text-xs text-gray-500">Playback</span>
                     <input
                       type="range"
-                      min={50} max={1500} step={50}
-                      value={1550 - speed}
-                      onChange={e => setSpeed(1550 - Number(e.target.value))}
+                      min={20} max={500} step={20}
+                      value={520 - speed}
+                      onChange={e => setSpeed(520 - Number(e.target.value))}
                       className="flex-1 accent-primary-500"
                     />
-                    <span className="text-xs text-gray-400 w-12 text-right">{speed}ms</span>
+                    <span className="text-xs text-gray-400 w-20 text-right">{stepsPerTick} step/tick</span>
                   </div>
                 </div>
               )}

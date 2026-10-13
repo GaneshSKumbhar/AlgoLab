@@ -1,7 +1,8 @@
 """
 Paradigm Advisor API routes.
 """
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from app.auth.service import current_user
 from app.models.schemas import AdvisorRequest, AdvisorResponse
 from app.advisor.rules import ProblemCharacteristics, recommend
 
@@ -9,7 +10,7 @@ router = APIRouter(prefix="/api", tags=["advisor"])
 
 
 @router.post("/advisor/recommend", response_model=AdvisorResponse)
-def get_recommendation(req: AdvisorRequest):
+def get_recommendation(req: AdvisorRequest, _: str = Depends(current_user)):
     chars = ProblemCharacteristics(
         is_graph_problem=req.is_graph_problem,
         is_optimization=req.is_optimization,
