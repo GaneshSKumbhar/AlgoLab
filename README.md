@@ -399,22 +399,20 @@ npm run dev
 
 The repository contains a production `Dockerfile` that builds the React interface and serves it from the same FastAPI service. This removes cross-origin API delays and means the public app uses one URL.
 
-For a free public demo, use **Koyeb** for the web service and **Neon** for the PostgreSQL database:
+For a free public demo, use **Vercel** for the web service and **Neon** for the PostgreSQL database:
 
 1. Create a free Neon project, then copy its **pooled PostgreSQL connection string**. Keep `sslmode=require` in the URL.
-2. In Koyeb, create a **Web Service** from `https://github.com/GaneshSKumbhar/AlgoLab`, choose the `main` branch, and select the repository `Dockerfile` builder.
-3. Select the free Web Service size, expose port `8000` as HTTP on route `/`, and set the HTTP health-check path to `/health`.
-4. Add these Koyeb **secret** environment variables (never commit them):
+2. In Vercel, import `https://github.com/GaneshSKumbhar/AlgoLab` as a new project. The committed `vercel.json` builds the Vite frontend and routes `/api/*` to FastAPI automatically.
+3. Add these Vercel **secret** environment variables for Production, Preview, and Development (never commit them):
 
    ```text
    DATABASE_URL=<your Neon pooled PostgreSQL connection string>
    ALGOLAB_AUTH_SECRET=<a long, unique random value>
    ```
 
-5. Deploy. Koyeb will build the image from GitHub. Open the generated `*.koyeb.app` URL and create the first AlgoLab account from the Sign in page.
-6. To avoid the free Koyeb instance's one-hour idle sleep, create one free UptimeRobot HTTP monitor for `https://<your-app>.koyeb.app/health` with the five-minute interval.
+4. Deploy. Open the generated `*.vercel.app` URL and create the first AlgoLab account from the Sign in page.
 
-The first database connection after Neon suspends its compute can take a little longer, but the dashboard itself stays on one origin and does not wait for a separate frontend service. Koyeb's free tier is suitable for coursework and demonstrations; use a paid always-on service for a production system with availability guarantees.
+The first database connection after Neon suspends its compute can take a little longer, but the dashboard itself stays on one origin and does not wait for a separate frontend service. Vercel's free tier is suitable for coursework and demonstrations; use a paid always-on service for a production system with availability guarantees.
 
 ---
 
