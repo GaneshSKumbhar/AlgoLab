@@ -300,7 +300,7 @@ export default function Visualizer() {
               {events.length === 0 && !loading && (
                 <div className="glass p-10 text-center">
                   <Play size={32} className="text-gray-600 mx-auto mb-3" />
-                  <p className="text-gray-400">Configure the input and click <strong className="text-white">Run Algorithm</strong> to start visualization.</p>
+                  <p className="text-gray-400">Configure your test case and click <strong className="text-white">Run My Input</strong> to start visualization.</p>
                 </div>
               )}
             </div>
@@ -782,6 +782,36 @@ function MetricsPanel({ metrics, result }: {
   );
 }
 
+function NumericListField({ id, label, value, onChange }: {
+  id?: string; label: string; value: number[]; onChange: (values: number[]) => void;
+}) {
+  const formattedValue = value.join(', ');
+  const [draft, setDraft] = useState(formattedValue);
+  const [invalid, setInvalid] = useState(false);
+
+  useEffect(() => { setDraft(formattedValue); }, [formattedValue]);
+
+  const commit = () => {
+    const tokens = draft.trim().split(/[\s,;]+/).filter(Boolean);
+    const values = tokens.map(Number);
+    const isValid = tokens.length > 0 && values.every(Number.isInteger);
+    setInvalid(!isValid);
+    if (isValid) onChange(values);
+  };
+
+  return (
+    <div>
+      <label htmlFor={id} className="text-xs text-gray-400 mb-1 block">{label}</label>
+      <input id={id} className={`input-field font-mono ${invalid ? 'border-red-500 focus:ring-red-500' : ''}`}
+        value={draft} onChange={event => { setDraft(event.target.value); setInvalid(false); }} onBlur={commit}
+        placeholder="e.g. 38, 27, 43 or 38 27 43" aria-invalid={invalid} />
+      <p className={`mt-1 text-xs ${invalid ? 'text-red-400' : 'text-gray-500'}`}>
+        {invalid ? 'Enter whole numbers separated by spaces, commas, semicolons, or new lines.' : 'Separate whole numbers with spaces, commas, semicolons, or pasted lines.'}
+      </p>
+    </div>
+  );
+}
+
 // ── Input Editor ──────────────────────────────────────────────────────────────
 function InputEditor({ algoId, input, onChange }: {
   algoId: string; input: Record<string, unknown>; onChange: (v: Record<string, unknown>) => void;
@@ -791,20 +821,11 @@ function InputEditor({ algoId, input, onChange }: {
 
   const update = (key: string, val: unknown) => onChange({ ...input, [key]: val });
 
-  const parseIntArray = (s: string) =>
-    s.split(',').map(x => parseInt(x.trim(), 10)).filter(n => !isNaN(n));
-
   if (type === 'array' || type === 'array_target') {
     return (
       <div className="space-y-3">
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Array (comma-separated)</label>
-          <input
-            id="array-input"
-            className="input-field font-mono"
-            value={((input.array as number[]) ?? []).join(', ')}
-            onChange={e => update('array', parseIntArray(e.target.value))}
-          />
+          <NumericListField id="array-input" label="Array" value={(input.array as number[]) ?? []} onChange={value => update('array', value)} />
         </div>
         {type === 'array_target' && (
           <div>
@@ -814,7 +835,7 @@ function InputEditor({ algoId, input, onChange }: {
               type="number"
               className="input-field font-mono"
               value={(input.target as number) ?? ''}
-              onChange={e => update('target', parseInt(e.target.value, 10))}
+              onChange={e => update('target', e.target.value === '' ? undefined : Number(e.target.value))}
             />
           </div>
         )}
@@ -835,20 +856,16 @@ function InputEditor({ algoId, input, onChange }: {
     return (
       <div className="space-y-3">
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Weights</label>
-          <input className="input-field font-mono" value={((input.weights as number[]) ?? []).join(', ')}
-            onChange={e => update('weights', parseIntArray(e.target.value))} />
+          <NumericListField label="Weights" value={(input.weights as number[]) ?? []} onChange={value => update('weights', value)} />
         </div>
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Values</label>
-          <input className="input-field font-mono" value={((input.values as number[]) ?? []).join(', ')}
-            onChange={e => update('values', parseIntArray(e.target.value))} />
+          <NumericListField label="Values" value={(input.values as number[]) ?? []} onChange={value => update('values', value)} />
         </div>
         <div>
           <label className="text-xs text-gray-400 mb-1 block">Capacity</label>
           <input type="number" className="input-field font-mono"
             value={(input.capacity as number) ?? 0}
-            onChange={e => update('capacity', parseInt(e.target.value, 10))} />
+            onChange={e => update('capacity', e.target.value === '' ? 0 : Number(e.target.value))} />
         </div>
       </div>
     );
@@ -875,14 +892,14 @@ function InputEditor({ algoId, input, onChange }: {
     return (
       <div className="space-y-3">
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">N (board size, 1–12)</label>
-          <input type="number" min={1} max={12} className="input-field font-mono"
+          <label className="text-xs text-gray-400 mb-1 block">N (board size, 1–10)</label>
+          <input type="number" min={1} max={10} className="input-field font-mono"
             value={(input.n as number) ?? 8}
             onChange={e => update('n', parseInt(e.target.value, 10))} />
         </div>
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Max solutions</label>
-          <input type="number" min={1} max={20} className="input-field font-mono"
+          <label className="text-xs text-gray-400 mb-1 block">Max solutions (1–10)</label>
+          <input type="number" min={1} max={10} className="input-field font-mono"
             value={(input.max_solutions as number) ?? 5}
             onChange={e => update('max_solutions', parseInt(e.target.value, 10))} />
         </div>
@@ -894,15 +911,13 @@ function InputEditor({ algoId, input, onChange }: {
     return (
       <div className="space-y-3">
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Coins (comma-separated)</label>
-          <input className="input-field font-mono" value={((input.coins as number[]) ?? []).join(', ')}
-            onChange={e => update('coins', parseIntArray(e.target.value))} />
+          <NumericListField label="Coin values" value={(input.coins as number[]) ?? []} onChange={value => update('coins', value)} />
         </div>
         <div>
           <label className="text-xs text-gray-400 mb-1 block">Amount</label>
           <input type="number" className="input-field font-mono"
             value={(input.amount as number) ?? 0}
-            onChange={e => update('amount', parseInt(e.target.value, 10))} />
+            onChange={e => update('amount', e.target.value === '' ? 0 : Number(e.target.value))} />
         </div>
       </div>
     );
