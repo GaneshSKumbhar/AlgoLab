@@ -1,191 +1,21 @@
 import { Link } from 'react-router-dom';
-import {
-  Brain, BarChart3, GitBranch, BookOpen, ArrowRight,
-  Zap, Network, Layers, Search, RefreshCw, Code2, Activity
-} from 'lucide-react';
+import { ArrowRight, BarChart3, BookOpen, Brain, CheckCircle2, Clock3, Play, Sparkles, StepForward } from 'lucide-react';
 import { Badge } from '../../components/ui';
+import { useAuth } from '../../auth/AuthContext';
 
-const problemCategories = [
-  { icon: GitBranch, label: 'Shortest Path', desc: 'Dijkstra, Bellman-Ford', color: 'text-indigo-400', bg: 'bg-indigo-900/30', link: '/visualizer/dijkstra' },
-  { icon: Network, label: 'Minimum Spanning Tree', desc: 'Kruskal, Prim', color: 'text-emerald-400', bg: 'bg-emerald-900/30', link: '/visualizer/kruskal' },
-  { icon: Layers, label: 'Knapsack / Packing', desc: '0/1 Knapsack, Fractional', color: 'text-purple-400', bg: 'bg-purple-900/30', link: '/visualizer/knapsack_01' },
-  { icon: RefreshCw, label: 'Sorting', desc: 'Merge Sort, Quick Sort', color: 'text-blue-400', bg: 'bg-blue-900/30', link: '/visualizer/merge_sort' },
-  { icon: Search, label: 'Searching', desc: 'Binary Search, Linear Search', color: 'text-cyan-400', bg: 'bg-cyan-900/30', link: '/visualizer/binary_search' },
-  { icon: Code2, label: 'String Problems', desc: 'LCS, Edit Distance', color: 'text-amber-400', bg: 'bg-amber-900/30', link: '/visualizer/lcs' },
-  { icon: Activity, label: 'Backtracking', desc: 'N-Queens, Graph Coloring', color: 'text-rose-400', bg: 'bg-rose-900/30', link: '/visualizer/n_queens' },
-  { icon: Zap, label: 'Network Flow', desc: 'Max-Flow, Matching', color: 'text-orange-400', bg: 'bg-orange-900/30', link: '/visualizer/edmonds_karp' },
+const learningPath = [
+  { number: '01', title: 'Choose your starting point', text: 'Choose an algorithm if you know its name, or ask the Advisor if you only know the problem.', icon: Brain, link: '/advisor', action: 'Ask the Advisor', color: 'text-primary-400' },
+  { number: '02', title: 'Run your own test case', text: 'Enter numbers, a graph, text, or DP values. Example data is there only to help you start.', icon: Play, link: '/visualizer', action: 'Open Visualizer', color: 'text-emerald-400' },
+  { number: '03', title: 'Understand the result', text: 'Play the trace, inspect every step, then use benchmarks to compare algorithms.', icon: BarChart3, link: '/benchmark', action: 'Compare performance', color: 'text-amber-400' },
 ];
 
-const quickAlgorithms = [
-  { id: 'merge_sort', name: 'Merge Sort', paradigm: 'Divide & Conquer', complexity: 'O(n log n)' },
-  { id: 'dijkstra', name: 'Dijkstra', paradigm: 'Greedy / Graph', complexity: 'O((V+E) log V)' },
-  { id: 'knapsack_01', name: '0/1 Knapsack', paradigm: 'Dynamic Programming', complexity: 'O(n·W)' },
-  { id: 'n_queens', name: 'N-Queens', paradigm: 'Backtracking', complexity: 'O(N!)' },
-  { id: 'kruskal', name: 'Kruskal MST', paradigm: 'Greedy', complexity: 'O(E log E)' },
-  { id: 'lcs', name: 'LCS', paradigm: 'Dynamic Programming', complexity: 'O(m·n)' },
+const starterAlgorithms = [
+  { name: 'Merge Sort', detail: 'Sort a list of numbers', link: '/visualizer/merge_sort', badge: 'Great first visualizer' },
+  { name: 'Dijkstra', detail: 'Find shortest paths in a weighted graph', link: '/visualizer/dijkstra', badge: 'Graph problem' },
+  { name: '0/1 Knapsack', detail: 'Choose the best items within a limit', link: '/visualizer/knapsack_01', badge: 'Dynamic programming' },
 ];
-
-const paradigmColors: Record<string, string> = {
-  'Divide & Conquer': 'indigo',
-  'Greedy': 'green',
-  'Greedy / Graph': 'green',
-  'Dynamic Programming': 'amber',
-  'Backtracking': 'red',
-  'Graph Traversal': 'gray',
-};
 
 export default function Dashboard() {
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-
-      {/* ── Hero ── */}
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-primary-900/60 via-surface-800 to-surface-900 border border-primary-700/30 p-8 sm:p-12 mb-10">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(99,102,241,0.15),_transparent_60%)]" />
-        <div className="relative z-10 max-w-2xl">
-          <Badge variant="indigo" className="mb-4">Problem-First DAA Platform</Badge>
-          <h1 className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-4">
-            What problem are you<br />
-            <span className="gradient-text">trying to solve?</span>
-          </h1>
-          <p className="text-gray-300 text-lg mb-8 leading-relaxed">
-            AlgoLab takes a <strong className="text-white">problem-first</strong> approach. Describe your problem,
-            get paradigm recommendations, visualize execution, and compare algorithms empirically.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link to="/advisor" className="btn-primary px-6 py-3 text-base">
-              <Brain size={18} />
-              Ask the Paradigm Advisor
-              <ArrowRight size={16} />
-            </Link>
-            <Link to="/algorithms" className="btn-secondary px-6 py-3 text-base">
-              <BookOpen size={18} />
-              Browse Algorithms
-            </Link>
-          </div>
-        </div>
-        <div className="absolute right-0 top-0 bottom-0 w-64 hidden lg:flex items-center justify-center opacity-10">
-          <svg viewBox="0 0 200 200" className="w-full h-full text-primary-400" fill="currentColor">
-            <circle cx="40" cy="40" r="6" /><circle cx="100" cy="20" r="6" /><circle cx="160" cy="40" r="6" />
-            <circle cx="20" cy="100" r="6" /><circle cx="100" cy="100" r="8" /><circle cx="180" cy="100" r="6" />
-            <circle cx="40" cy="160" r="6" /><circle cx="100" cy="180" r="6" /><circle cx="160" cy="160" r="6" />
-            <line x1="40" y1="40" x2="100" y2="20" stroke="currentColor" strokeWidth="2" />
-            <line x1="100" y1="20" x2="160" y2="40" stroke="currentColor" strokeWidth="2" />
-            <line x1="40" y1="40" x2="20" y2="100" stroke="currentColor" strokeWidth="2" />
-            <line x1="40" y1="40" x2="100" y2="100" stroke="currentColor" strokeWidth="2" />
-            <line x1="160" y1="40" x2="180" y2="100" stroke="currentColor" strokeWidth="2" />
-            <line x1="160" y1="40" x2="100" y2="100" stroke="currentColor" strokeWidth="2" />
-            <line x1="20" y1="100" x2="40" y2="160" stroke="currentColor" strokeWidth="2" />
-            <line x1="100" y1="100" x2="40" y2="160" stroke="currentColor" strokeWidth="2" />
-            <line x1="100" y1="100" x2="160" y2="160" stroke="currentColor" strokeWidth="2" />
-            <line x1="180" y1="100" x2="160" y2="160" stroke="currentColor" strokeWidth="2" />
-            <line x1="40" y1="160" x2="100" y2="180" stroke="currentColor" strokeWidth="2" />
-            <line x1="160" y1="160" x2="100" y2="180" stroke="currentColor" strokeWidth="2" />
-          </svg>
-        </div>
-      </div>
-
-      {/* ── Stats row ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-        {[
-          { label: 'Algorithms', value: '20+', icon: Code2, color: 'text-primary-400' },
-          { label: 'Paradigms', value: '7', icon: Layers, color: 'text-emerald-400' },
-          { label: 'Visualizations', value: 'Live', icon: Activity, color: 'text-amber-400' },
-          { label: 'Benchmark Engine', value: 'Real', icon: BarChart3, color: 'text-rose-400' },
-        ].map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="glass p-4 text-center">
-            <Icon size={22} className={`${color} mx-auto mb-2`} />
-            <div className={`text-2xl font-bold ${color} font-mono`}>{value}</div>
-            <div className="text-xs text-gray-500 uppercase tracking-wider mt-0.5">{label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* ── Problem Categories ── */}
-      <section className="mb-10">
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <h2 className="text-xl font-bold text-white">Problem Categories</h2>
-            <p className="text-gray-400 text-sm mt-0.5">Choose by problem type, not by algorithm name</p>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {problemCategories.map(({ icon: Icon, label, desc, color, bg, link }) => (
-            <Link
-              key={label}
-              to={link}
-              className="glass-hover p-4 group animate-fade-in"
-            >
-              <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-150`}>
-                <Icon size={20} className={color} />
-              </div>
-              <h3 className="text-sm font-semibold text-white mb-0.5">{label}</h3>
-              <p className="text-xs text-gray-500">{desc}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Quick Access ── */}
-      <div className="grid lg:grid-cols-3 gap-6 mb-10">
-        {/* Paradigm Advisor CTA */}
-        <div className="lg:col-span-1 glass p-6 flex flex-col gap-4 border border-primary-700/30 bg-gradient-to-br from-primary-900/30 to-surface-800">
-          <div className="w-12 h-12 rounded-2xl bg-primary-600/20 flex items-center justify-center border border-primary-600/30">
-            <Brain size={24} className="text-primary-400" />
-          </div>
-          <div>
-            <h2 className="text-lg font-bold text-white mb-1">Paradigm Advisor</h2>
-            <p className="text-gray-400 text-sm">
-              Answer a few questions about your problem. Our rule-based engine recommends the best algorithmic paradigms and explains why.
-            </p>
-          </div>
-          <Link to="/advisor" className="btn-primary mt-auto">
-            Get Recommendation <ArrowRight size={16} />
-          </Link>
-        </div>
-
-        {/* Quick Algorithm Access */}
-        <div className="lg:col-span-2 glass p-6">
-          <h2 className="text-lg font-bold text-white mb-4">Quick Access</h2>
-          <div className="space-y-2">
-            {quickAlgorithms.map(({ id, name, paradigm, complexity }) => (
-              <Link
-                key={id}
-                to={`/visualizer/${id}`}
-                className="flex items-center justify-between px-4 py-3 rounded-lg bg-surface-700 hover:bg-surface-600 border border-surface-600 hover:border-primary-600/40 transition-all duration-150 group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-primary-500 group-hover:animate-pulse" />
-                  <span className="font-medium text-white text-sm">{name}</span>
-                  <Badge variant={(paradigmColors[paradigm] as any) ?? 'gray'} className="hidden sm:inline-flex">
-                    {paradigm}
-                  </Badge>
-                </div>
-                <span className="text-xs font-mono text-gray-400 group-hover:text-primary-400 transition-colors">{complexity}</span>
-              </Link>
-            ))}
-          </div>
-          <div className="mt-4 pt-4 border-t border-surface-600">
-            <Link to="/algorithms" className="btn-secondary w-full justify-center">
-              <BookOpen size={16} /> View All Algorithms
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Feature row ── */}
-      <section className="grid sm:grid-cols-3 gap-4">
-        {[
-          { icon: GitBranch, title: 'Live Visualizer', desc: 'Step through actual algorithm execution — not fake animations.', link: '/visualizer', color: 'text-indigo-400' },
-          { icon: BarChart3, title: 'Benchmark Lab', desc: 'Real operation counts and runtime on your inputs. No fabricated data.', link: '/benchmark', color: 'text-emerald-400' },
-          { icon: Brain, title: 'Case Studies', desc: 'Real-world problems: routing, scheduling, compression, assignment.', link: '/case-studies', color: 'text-amber-400' },
-        ].map(({ icon: Icon, title, desc, link, color }) => (
-          <Link key={title} to={link} className="glass-hover p-5 group">
-            <Icon size={24} className={`${color} mb-3 group-hover:scale-110 transition-transform duration-150`} />
-            <h3 className="font-semibold text-white mb-1">{title}</h3>
-            <p className="text-sm text-gray-400">{desc}</p>
-          </Link>
-        ))}
-      </section>
-    </div>
-  );
+  const { authenticated, username } = useAuth();
+  return <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8"><section className="relative overflow-hidden rounded-2xl border border-primary-700/35 bg-gradient-to-br from-primary-900/70 via-surface-800 to-surface-900 p-7 sm:p-10"><div className="absolute right-0 top-0 h-56 w-56 rounded-full bg-accent-500/15 blur-3xl" /><div className="relative max-w-3xl"><Badge variant="indigo">Interactive DAA learning workspace</Badge><h1 className="mt-4 text-3xl sm:text-5xl font-bold text-white leading-tight">{authenticated ? `Welcome back, ${username}.` : 'Turn algorithm theory into something you can see.'}</h1><p className="mt-4 max-w-2xl text-gray-300 text-base sm:text-lg leading-relaxed">AlgoLab lets you test your own input, replay the real execution step by step, and compare how different approaches behave.</p><div className="mt-7 flex flex-wrap gap-3"><Link to={authenticated ? '/visualizer' : '/login'} className="btn-primary px-5 py-3"><Play size={17} />{authenticated ? 'Run an algorithm' : 'Create an account to begin'}<ArrowRight size={16} /></Link><Link to="/algorithms" className="btn-secondary px-5 py-3"><BookOpen size={17} />Browse all algorithms</Link></div></div></section><section><div className="flex items-end justify-between gap-4 mb-4"><div><p className="text-primary-400 text-xs font-semibold tracking-widest uppercase">Start here</p><h2 className="text-2xl font-bold text-white mt-1">A simple learning path</h2></div><span className="hidden sm:flex items-center gap-1 text-xs text-gray-500"><Clock3 size={14} />Usually takes less than 2 minutes</span></div><div className="grid lg:grid-cols-3 gap-4">{learningPath.map(({ number, title, text, icon: Icon, link, action, color }) => <div key={number} className="glass p-6 flex flex-col"><div className="flex items-center justify-between"><span className="font-mono text-xs text-gray-500">STEP {number}</span><Icon size={21} className={color} /></div><h3 className="mt-5 text-lg font-bold text-white">{title}</h3><p className="mt-2 text-sm text-gray-400 leading-relaxed">{text}</p><Link to={link} className="mt-6 text-sm font-medium text-primary-400 hover:text-primary-300 inline-flex items-center gap-1">{action}<ArrowRight size={15} /></Link></div>)}</div></section><section className="grid lg:grid-cols-[1.1fr_0.9fr] gap-6"><div className="glass p-6"><div className="flex items-center gap-2"><Sparkles className="text-amber-400" size={19} /><h2 className="text-lg font-bold text-white">Try one of these first</h2></div><p className="text-sm text-gray-400 mt-2">Each option opens with sample data that you can immediately replace.</p><div className="mt-4 space-y-2">{starterAlgorithms.map(item => <Link key={item.name} to={item.link} className="block rounded-lg border border-surface-600 bg-surface-700/50 hover:border-primary-600/50 hover:bg-surface-700 px-4 py-3 transition-colors"><div className="flex justify-between gap-3"><div><h3 className="font-medium text-white text-sm">{item.name}</h3><p className="text-xs text-gray-400 mt-1">{item.detail}</p></div><ArrowRight className="text-primary-400 flex-shrink-0" size={17} /></div><span className="inline-block mt-2 text-[11px] text-primary-300">{item.badge}</span></Link>)}</div></div><aside className="glass p-6"><div className="flex gap-2 items-center"><StepForward className="text-emerald-400" size={19} /><h2 className="text-lg font-bold text-white">What the controls mean</h2></div><ul className="mt-4 space-y-3 text-sm">{[['Run My Input', 'Executes the values you entered.'], ['Play / Next / End', 'Replays the recorded algorithm steps.'], ['Playback', 'Speeds up long traces automatically.'], ['Metrics tab', 'Shows comparisons, swaps, updates, and other real counts.']].map(([term, text]) => <li key={term} className="flex gap-2"><CheckCircle2 size={17} className="text-emerald-400 mt-0.5 flex-shrink-0" /><span><strong className="text-gray-200">{term}:</strong> <span className="text-gray-400">{text}</span></span></li>)}</ul><Link to="/about" className="mt-6 btn-secondary w-full justify-center">See how AlgoLab works</Link></aside></section><section className="glass p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-primary-700/25"><div><h2 className="font-semibold text-white">Not sure which algorithm fits your problem?</h2><p className="text-sm text-gray-400 mt-1">Describe the structure of your problem and receive an explainable recommendation.</p></div><Link to="/advisor" className="btn-primary justify-center"><Brain size={16} />Open Paradigm Advisor</Link></section></div>;
 }
