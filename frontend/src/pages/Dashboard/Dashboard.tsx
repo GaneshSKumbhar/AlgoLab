@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
-import { Activity, ArrowRight, BarChart3, BookOpen, Brain, Code2, FileArchive, GitBranch, Layers, Network, RefreshCw, Search } from 'lucide-react';
+import { Activity, ArrowRight, BarChart3, BookOpen, Brain, Code2, FileArchive, FileDown, GitBranch, Layers, Network, RefreshCw, Search, Volume2, CheckCircle2 } from 'lucide-react';
 import { Badge } from '../../components/ui';
 
 const categories = [
@@ -26,25 +26,39 @@ const quickAlgorithms = [
 const metrics: { label: string; value: string; icon: LucideIcon; color: string }[] = [
   { label: 'Algorithms', value: '20', icon: Code2, color: 'text-primary-400' },
   { label: 'Paradigms', value: '7', icon: Layers, color: 'text-emerald-400' },
-  { label: 'Visualizations', value: 'Live', icon: Activity, color: 'text-amber-400' },
-  { label: 'Benchmark Engine', value: 'Real', icon: BarChart3, color: 'text-rose-400' },
+  { label: 'Learning Tools', value: '3', icon: BookOpen, color: 'text-amber-400' },
+  { label: 'Run Data', value: 'Real', icon: BarChart3, color: 'text-rose-400' },
 ];
 
 const features: { icon: LucideIcon; title: string; description: string; link: string; color: string }[] = [
-  { icon: GitBranch, title: 'Live Visualizer', description: 'Test your own input and step through actual execution.', link: '/visualizer', color: 'text-indigo-400' },
+  { icon: Volume2, title: 'Voice-Guided Playback', description: 'Hear each real trace step, then advance only when its explanation finishes.', link: '/visualizer', color: 'text-indigo-400' },
+  { icon: FileDown, title: 'Personal Exam Notes', description: 'Download revision-ready PDF notes using your exact input, trace, result, and metrics.', link: '/visualizer', color: 'text-purple-400' },
   { icon: BarChart3, title: 'Benchmark Lab', description: 'Compare operation counts and runtime using real data.', link: '/benchmark', color: 'text-emerald-400' },
-  { icon: Brain, title: 'Case Studies', description: 'Routing, scheduling, compression, and assignment examples.', link: '/case-studies', color: 'text-amber-400' },
 ];
+
+const learningWorkflow = [
+  { number: '01', icon: GitBranch, title: 'Run your own example', description: 'Replace the sample values and execute the real algorithm trace.', color: 'text-primary-400', link: '/visualizer/merge_sort' },
+  { number: '02', icon: Volume2, title: 'See and hear every step', description: 'Use visual playback for speed or Play Voice for step-synchronized explanations.', color: 'text-emerald-400', link: '/visualizer/merge_sort' },
+  { number: '03', icon: FileDown, title: 'Revise from your run', description: 'Download exam notes built from your input, output, trace, and metrics.', color: 'text-purple-400', link: '/visualizer/merge_sort' },
+] as const;
 
 export default function Dashboard() {
   return <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
     <section className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-primary-900/60 via-surface-800 to-surface-900 border border-primary-700/30 p-8 sm:p-12 mb-10">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(99,102,241,0.15),_transparent_60%)]" />
-      <div className="relative z-10 max-w-2xl"><Badge variant="indigo" className="mb-4">Problem-First DAA Platform</Badge><h1 className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-4">What problem are you<br /><span className="gradient-text">trying to solve?</span></h1><p className="text-gray-300 text-lg mb-8 leading-relaxed">Describe your problem, get paradigm recommendations, test your own input, visualize execution, and compare algorithms empirically.</p><div className="flex flex-wrap gap-3"><Link to="/advisor" className="btn-primary px-6 py-3 text-base"><Brain size={18} />Ask the Paradigm Advisor<ArrowRight size={16} /></Link><Link to="/algorithms" className="btn-secondary px-6 py-3 text-base"><BookOpen size={18} />Browse Algorithms</Link></div></div>
+      <div className="relative z-10 max-w-2xl"><Badge variant="indigo" className="mb-4">Problem-First DAA Platform</Badge><h1 className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-4">What problem are you<br /><span className="gradient-text">trying to solve?</span></h1><p className="text-gray-300 text-lg mb-8 leading-relaxed">Choose a paradigm, run your own input, watch the real trace, listen step by step, and download exam notes from your completed run.</p><div className="flex flex-wrap gap-3"><Link to="/advisor" className="btn-primary px-6 py-3 text-base"><Brain size={18} />Ask the Paradigm Advisor<ArrowRight size={16} /></Link><Link to="/visualizer/merge_sort" className="btn-secondary px-6 py-3 text-base"><GitBranch size={18} />Start a Visualization</Link></div></div>
       <div className="absolute right-10 top-1/2 -translate-y-1/2 hidden lg:grid grid-cols-3 gap-5 opacity-15">{Array.from({ length: 9 }, (_, index) => <span key={index} className="w-4 h-4 rounded-full bg-primary-300" />)}</div>
     </section>
 
     <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">{metrics.map(({ label, value, icon: Icon, color }) => <div key={label} className="glass p-4 text-center"><Icon size={22} className={`${color} mx-auto mb-2`} /><div className={`text-2xl font-bold ${color} font-mono`}>{value}</div><div className="text-xs text-gray-500 uppercase tracking-wider mt-0.5">{label}</div></div>)}</section>
+
+    <section className="glass p-6 sm:p-7 mb-10 border border-primary-700/25">
+      <div className="flex items-start justify-between gap-4 flex-wrap mb-6">
+        <div><p className="text-primary-400 text-xs font-semibold uppercase tracking-widest mb-1">Study workflow</p><h2 className="text-xl font-bold text-white">From practice run to exam revision</h2><p className="text-gray-400 text-sm mt-1">Everything is based on the real trace generated from your input.</p></div>
+        <Badge variant="green"><CheckCircle2 size={13} className="mr-1" />Run-based learning</Badge>
+      </div>
+      <div className="grid md:grid-cols-3 gap-4">{learningWorkflow.map(({ number, icon: Icon, title, description, color, link }) => <Link key={number} to={link} className="rounded-xl border border-surface-600 bg-surface-800/60 p-5 hover:border-primary-500/50 hover:bg-surface-700/60 transition-all group"><div className="flex items-center justify-between mb-4"><span className="font-mono text-xs text-gray-500">{number}</span><Icon size={20} className={`${color} group-hover:scale-110 transition-transform`} /></div><h3 className="font-semibold text-white mb-1">{title}</h3><p className="text-sm text-gray-400 leading-relaxed">{description}</p></Link>)}</div>
+    </section>
 
     <section className="mb-10"><h2 className="text-xl font-bold text-white">Problem Categories</h2><p className="text-gray-400 text-sm mt-0.5 mb-5">Choose by problem type, not by algorithm name</p><div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">{categories.map(([label, description, Icon, color, background, link]) => <Link key={label} to={link} className="glass-hover p-4 group animate-fade-in"><div className={`w-10 h-10 rounded-xl ${background} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}><Icon size={20} className={color} /></div><h3 className="text-sm font-semibold text-white mb-0.5">{label}</h3><p className="text-xs text-gray-500">{description}</p></Link>)}</div></section>
 
