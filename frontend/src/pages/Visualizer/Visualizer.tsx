@@ -2,16 +2,17 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Play, Pause, SkipBack, SkipForward, RefreshCw,
-  ChevronLeft, ChevronRight, Gauge, List, GitBranch, Volume2, VolumeX
+  ChevronLeft, ChevronRight, Gauge, List, GitBranch, Volume2, VolumeX, FileDown
 } from 'lucide-react';
 import {
   visualizeSort, visualizeGraph, visualizeDP,
-  visualizeBacktrack, visualizeGreedy
+  visualizeBacktrack, visualizeGreedy, fetchAlgorithm
 } from '../../services/api';
-import type { TraceEvent } from '../../services/api';
+import type { TraceEvent, VisualizeResponse } from '../../services/api';
 import { Badge, Spinner, Tabs, MetricCard, Alert } from '../../components/ui';
 import { clsx } from '../../utils/clsx';
 import { useVoiceNarration } from '../../hooks/useVoiceNarration';
+import { downloadExamNotes } from '../../services/examNotesService';
 
 // ── Algorithm config registry ──────────────────────────────────────────────────
 const ALGO_CONFIG: Record<string, {
@@ -82,6 +83,8 @@ const eventColors: Record<string, string> = {
   complete: '#10b981',
 };
 
+type CompletedRun = Pick<VisualizeResponse, 'events' | 'metrics' | 'result'> & { input: Record<string, unknown> };
+
 export default function Visualizer() {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
@@ -101,6 +104,9 @@ export default function Visualizer() {
   const [voicePlaying, setVoicePlaying] = useState(false);
   const [voiceRate, setVoiceRate] = useState(1);
   const [voiceVolume, setVoiceVolume] = useState(1);
+  const [completedRun, setCompletedRun] = useState<CompletedRun | null>(null);
+  const [generatingNotes, setGeneratingNotes] = useState(false);
+  const [notesMessage, setNotesMessage] = useState<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const cfg = ALGO_CONFIG[algoId] ?? ALGO_CONFIG['merge_sort'];
@@ -157,13 +163,15 @@ export default function Visualizer() {
 
   const run = useCallback(async () => {
     cancelNarration();
-    setLoading(true); setError(null); setPlaying(false); setVoicePlaying(false); setStep(0);
+    const inputSnapshot = JSON.parse(JSON.stringify(input)) as Record<string, unknown>;
+    setLoading(true); setError(null); setNotesMessage(null); setPlaying(false); setVoicePlaying(false); setStep(0);
     try {
-      const res = await executeAlgorithm(algoId, input);
+      const res = await executeAlgorithm(algoId, inputSnapshot);
       if (!res.success) throw new Error(res.error ?? 'Execution failed');
       setEvents(res.events);
       setMetrics(res.metrics);
       setResult(res.result);
+      setCompletedRun({ input: inputSnapshot, events: res.events, metrics: res.metrics, result: res.result });
     } catch (e: any) {
       setError(e.message ?? 'Backend error');
     } finally {
@@ -174,11 +182,28 @@ export default function Visualizer() {
   const handleAlgoChange = (newId: string) => {
     cancelNarration();
     setAlgoId(newId);
-    setEvents([]); setStep(0); setPlaying(false); setVoicePlaying(false); setError(null);
+    setEvents([]); setStep(0); setPlaying(false); setVoicePlaying(false); setCompletedRun(null); setNotesMessage(null); setError(null);
     navigate(`/visualizer/${newId}`, { replace: true });
   };
 
   const progress = events.length > 0 ? ((step + 1) / events.length) * 100 : 0;
+
+  const downloadNotes = async () => {
+    if (!completedRun) {
+      setNotesMessage('Run an algorithm first to generate exam notes.');
+      return;
+    }
+    setGeneratingNotes(true); setNotesMessage(null);
+    try {
+      const metadata = await fetchAlgorithm(algoId);
+      await downloadExamNotes(metadata, completedRun);
+      setNotesMessage('Exam notes downloaded successfully.');
+    } catch {
+      setNotesMessage('Unable to generate exam notes. Please try again.');
+    } finally {
+      setGeneratingNotes(false);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -233,7 +258,20 @@ export default function Visualizer() {
             {loading ? 'Running your input...' : 'Run My Input'}
           </button>
 
+          {completedRun && (
+            <button
+              type="button"
+              onClick={downloadNotes}
+              disabled={generatingNotes}
+              className="btn-secondary w-full justify-center py-3"
+            >
+              {generatingNotes ? <Spinner size={16} /> : <FileDown size={16} />}
+              {generatingNotes ? 'Generating Notes...' : 'Download Exam Notes'}
+            </button>
+          )}
+
           {error && <Alert type="error">{error}</Alert>}
+          {notesMessage && <Alert type={notesMessage.startsWith('Exam notes') ? 'success' : 'error'}>{notesMessage}</Alert>}
         </div>
 
         {/* ── Right panel: Visualization + Controls ── */}
