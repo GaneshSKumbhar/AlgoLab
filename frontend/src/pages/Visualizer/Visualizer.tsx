@@ -98,6 +98,7 @@ export default function Visualizer() {
   const [speed, setSpeed] = useState(60); // ms per animation tick
   const [activeTab, setActiveTab] = useState('visualizer');
   const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [voicePlaying, setVoicePlaying] = useState(false);
   const [voiceRate, setVoiceRate] = useState(1);
   const [voiceVolume, setVoiceVolume] = useState(1);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -105,13 +106,10 @@ export default function Visualizer() {
   const cfg = ALGO_CONFIG[algoId] ?? ALGO_CONFIG['merge_sort'];
   const currentEvent = events[step] ?? null;
   const stepsPerTick = Math.max(1, Math.ceil(events.length / 300));
-  const { supported: voiceSupported, status: voiceStatus, cancel: cancelNarration } = useVoiceNarration({
+  const { supported: voiceSupported, status: voiceStatus, cancel: cancelNarration, speak } = useVoiceNarration({
     enabled: voiceEnabled,
     rate: voiceRate,
     volume: voiceVolume,
-    event: currentEvent,
-    algorithmId: algoId,
-    algorithmName: cfg.name,
   });
 
   // Sync URL param
@@ -119,7 +117,7 @@ export default function Visualizer() {
     if (id && ALGO_CONFIG[id]) {
       setAlgoId(id);
       setInput(ALGO_CONFIG[id].defaultInput);
-      setEvents([]); setStep(0); setPlaying(false);
+      setEvents([]); setStep(0); setPlaying(false); setVoicePlaying(false);
     }
   }, [id]);
 
@@ -142,9 +140,24 @@ export default function Visualizer() {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [playing, speed, events.length, stepsPerTick]);
 
+  // Voice playback is intentionally separate from visual playback. It advances
+  // precisely one event after the current spoken explanation has completed.
+  useEffect(() => {
+    if (!voicePlaying || !currentEvent || !voiceEnabled) return;
+    return speak(currentEvent, { algorithmId: algoId, algorithmName: cfg.name }, () => {
+      setStep(currentStep => {
+        if (currentStep >= events.length - 1) {
+          setVoicePlaying(false);
+          return currentStep;
+        }
+        return currentStep + 1;
+      });
+    });
+  }, [algoId, cfg.name, currentEvent, events.length, speak, voiceEnabled, voicePlaying]);
+
   const run = useCallback(async () => {
     cancelNarration();
-    setLoading(true); setError(null); setPlaying(false); setStep(0);
+    setLoading(true); setError(null); setPlaying(false); setVoicePlaying(false); setStep(0);
     try {
       const res = await executeAlgorithm(algoId, input);
       if (!res.success) throw new Error(res.error ?? 'Execution failed');
@@ -161,7 +174,7 @@ export default function Visualizer() {
   const handleAlgoChange = (newId: string) => {
     cancelNarration();
     setAlgoId(newId);
-    setEvents([]); setStep(0); setPlaying(false); setError(null);
+    setEvents([]); setStep(0); setPlaying(false); setVoicePlaying(false); setError(null);
     navigate(`/visualizer/${newId}`, { replace: true });
   };
 
@@ -275,23 +288,23 @@ export default function Visualizer() {
 
                   {/* Controls */}
                   <div className="flex items-center gap-2 justify-center">
-                    <button className="btn-icon" onClick={() => { cancelNarration(); setPlaying(false); setStep(0); }} title="Restart" aria-label="Restart visualization">
+                    <button className="btn-icon" onClick={() => { cancelNarration(); setPlaying(false); setVoicePlaying(false); setStep(0); }} title="Restart" aria-label="Restart visualization">
                       <SkipBack size={16} />
                     </button>
-                    <button className="btn-icon" onClick={() => { cancelNarration(); setPlaying(false); setStep(s => Math.max(0, s - 1)); }} title="Previous" aria-label="Previous step">
+                    <button className="btn-icon" onClick={() => { cancelNarration(); setPlaying(false); setVoicePlaying(false); setStep(s => Math.max(0, s - 1)); }} title="Previous" aria-label="Previous step">
                       <ChevronLeft size={16} />
                     </button>
                     <button
                       className="btn-primary px-5"
-                      onClick={() => { if (playing) cancelNarration(); setPlaying(!playing); }}
+                      onClick={() => { cancelNarration(); setVoicePlaying(false); setPlaying(current => !current); }}
                     >
                       {playing ? <Pause size={16} /> : <Play size={16} />}
                       {playing ? 'Pause' : 'Play'}
                     </button>
-                    <button className="btn-icon" onClick={() => { cancelNarration(); setPlaying(false); setStep(s => Math.min(events.length - 1, s + 1)); }} title="Next" aria-label="Next step">
+                    <button className="btn-icon" onClick={() => { cancelNarration(); setPlaying(false); setVoicePlaying(false); setStep(s => Math.min(events.length - 1, s + 1)); }} title="Next" aria-label="Next step">
                       <ChevronRight size={16} />
                     </button>
-                    <button className="btn-icon" onClick={() => { cancelNarration(); setPlaying(false); setStep(events.length - 1); }} title="End" aria-label="Final step">
+                    <button className="btn-icon" onClick={() => { cancelNarration(); setPlaying(false); setVoicePlaying(false); setStep(events.length - 1); }} title="End" aria-label="Final step">
                       <SkipForward size={16} />
                     </button>
                   </div>
@@ -313,7 +326,11 @@ export default function Visualizer() {
                     <button
                       type="button"
                       disabled={!voiceSupported}
-                      onClick={() => setVoiceEnabled(enabled => !enabled)}
+                      onClick={() => {
+                        cancelNarration();
+                        setVoicePlaying(false);
+                        setVoiceEnabled(enabled => !enabled);
+                      }}
                       aria-pressed={voiceEnabled}
                       aria-label={voiceSupported ? `Voice narration ${voiceEnabled ? 'on' : 'off'}` : 'Voice narration is not supported in this browser'}
                       className={clsx(
@@ -327,6 +344,24 @@ export default function Visualizer() {
                     </button>
                     {voiceSupported ? (
                       <>
+                        <button
+                          type="button"
+                          disabled={!voiceEnabled}
+                          onClick={() => {
+                            if (voicePlaying) {
+                              cancelNarration();
+                              setVoicePlaying(false);
+                            } else {
+                              setPlaying(false);
+                              setVoicePlaying(true);
+                            }
+                          }}
+                          className={clsx('btn-primary text-xs px-3 py-2', !voiceEnabled && 'opacity-50 cursor-not-allowed')}
+                          aria-label={voicePlaying ? 'Pause voice-guided playback' : 'Play voice-guided playback'}
+                        >
+                          {voicePlaying ? <Pause size={15} /> : <Play size={15} />}
+                          {voicePlaying ? 'Pause Voice' : 'Play Voice'}
+                        </button>
                         <label className="flex items-center gap-2 text-xs text-gray-400">
                           Voice speed
                           <select aria-label="Voice narration speed" value={voiceRate} onChange={event => setVoiceRate(Number(event.target.value))} className="bg-surface-700 border border-surface-600 rounded px-2 py-1 text-gray-200">
@@ -340,7 +375,7 @@ export default function Visualizer() {
                           Volume
                           <input aria-label="Voice narration volume" type="range" min={0} max={1} step={0.1} value={voiceVolume} onChange={event => setVoiceVolume(Number(event.target.value))} className="w-20 accent-primary-500" />
                         </label>
-                        <span className="text-xs text-gray-500" aria-live="polite">{voiceStatus === 'speaking' ? 'Speaking' : 'Ready'}</span>
+                        <span className="text-xs text-gray-500" aria-live="polite">{voiceStatus === 'speaking' ? 'Speaking — visual waits' : voiceEnabled ? 'Ready for voice playback' : 'Voice Off'}</span>
                       </>
                     ) : (
                       <span className="text-xs text-amber-300" role="status">Voice narration is not supported in this browser.</span>
@@ -359,7 +394,7 @@ export default function Visualizer() {
           )}
 
           {activeTab === 'trace' && (
-            <TracePanel events={events} currentStep={step} onJump={nextStep => { cancelNarration(); setPlaying(false); setStep(nextStep); }} />
+            <TracePanel events={events} currentStep={step} onJump={nextStep => { cancelNarration(); setPlaying(false); setVoicePlaying(false); setStep(nextStep); }} />
           )}
 
           {activeTab === 'metrics' && (
