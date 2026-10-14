@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Play, Pause, SkipBack, SkipForward, RefreshCw,
-  ChevronLeft, ChevronRight, Gauge, List, GitBranch
+  ChevronLeft, ChevronRight, Gauge, List, GitBranch, Volume2, VolumeX
 } from 'lucide-react';
 import {
   visualizeSort, visualizeGraph, visualizeDP,
@@ -11,6 +11,7 @@ import {
 import type { TraceEvent } from '../../services/api';
 import { Badge, Spinner, Tabs, MetricCard, Alert } from '../../components/ui';
 import { clsx } from '../../utils/clsx';
+import { useVoiceNarration } from '../../hooks/useVoiceNarration';
 
 // ── Algorithm config registry ──────────────────────────────────────────────────
 const ALGO_CONFIG: Record<string, {
@@ -96,11 +97,22 @@ export default function Visualizer() {
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(60); // ms per animation tick
   const [activeTab, setActiveTab] = useState('visualizer');
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [voiceRate, setVoiceRate] = useState(1);
+  const [voiceVolume, setVoiceVolume] = useState(1);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const cfg = ALGO_CONFIG[algoId] ?? ALGO_CONFIG['merge_sort'];
   const currentEvent = events[step] ?? null;
   const stepsPerTick = Math.max(1, Math.ceil(events.length / 300));
+  const { supported: voiceSupported, status: voiceStatus, cancel: cancelNarration } = useVoiceNarration({
+    enabled: voiceEnabled,
+    rate: voiceRate,
+    volume: voiceVolume,
+    event: currentEvent,
+    algorithmId: algoId,
+    algorithmName: cfg.name,
+  });
 
   // Sync URL param
   useEffect(() => {
@@ -131,6 +143,7 @@ export default function Visualizer() {
   }, [playing, speed, events.length, stepsPerTick]);
 
   const run = useCallback(async () => {
+    cancelNarration();
     setLoading(true); setError(null); setPlaying(false); setStep(0);
     try {
       const res = await executeAlgorithm(algoId, input);
@@ -143,9 +156,10 @@ export default function Visualizer() {
     } finally {
       setLoading(false);
     }
-  }, [algoId, input]);
+  }, [algoId, cancelNarration, input]);
 
   const handleAlgoChange = (newId: string) => {
+    cancelNarration();
     setAlgoId(newId);
     setEvents([]); setStep(0); setPlaying(false); setError(null);
     navigate(`/visualizer/${newId}`, { replace: true });
@@ -192,7 +206,7 @@ export default function Visualizer() {
           <div className="glass p-4">
             <h3 className="text-sm font-semibold text-gray-300 mb-3">Input Configuration</h3>
             <p className="text-xs text-gray-500 mb-3">Enter your own test case below. Interactive traces are limited to safe sizes so results stay fast.</p>
-            <InputEditor algoId={algoId} input={input} onChange={setInput} />
+            <InputEditor algoId={algoId} input={input} onChange={value => { cancelNarration(); setInput(value); }} />
           </div>
 
           {/* Run button */}
@@ -261,23 +275,23 @@ export default function Visualizer() {
 
                   {/* Controls */}
                   <div className="flex items-center gap-2 justify-center">
-                    <button className="btn-icon" onClick={() => { setPlaying(false); setStep(0); }} title="Restart">
+                    <button className="btn-icon" onClick={() => { cancelNarration(); setPlaying(false); setStep(0); }} title="Restart" aria-label="Restart visualization">
                       <SkipBack size={16} />
                     </button>
-                    <button className="btn-icon" onClick={() => setStep(s => Math.max(0, s - 1))} title="Previous">
+                    <button className="btn-icon" onClick={() => { cancelNarration(); setPlaying(false); setStep(s => Math.max(0, s - 1)); }} title="Previous" aria-label="Previous step">
                       <ChevronLeft size={16} />
                     </button>
                     <button
                       className="btn-primary px-5"
-                      onClick={() => setPlaying(p => !p)}
+                      onClick={() => { if (playing) cancelNarration(); setPlaying(!playing); }}
                     >
                       {playing ? <Pause size={16} /> : <Play size={16} />}
                       {playing ? 'Pause' : 'Play'}
                     </button>
-                    <button className="btn-icon" onClick={() => setStep(s => Math.min(events.length - 1, s + 1))} title="Next">
+                    <button className="btn-icon" onClick={() => { cancelNarration(); setPlaying(false); setStep(s => Math.min(events.length - 1, s + 1)); }} title="Next" aria-label="Next step">
                       <ChevronRight size={16} />
                     </button>
-                    <button className="btn-icon" onClick={() => { setPlaying(false); setStep(events.length - 1); }} title="End">
+                    <button className="btn-icon" onClick={() => { cancelNarration(); setPlaying(false); setStep(events.length - 1); }} title="End" aria-label="Final step">
                       <SkipForward size={16} />
                     </button>
                   </div>
@@ -294,6 +308,44 @@ export default function Visualizer() {
                     />
                     <span className="text-xs text-gray-400 w-20 text-right">{stepsPerTick} step/tick</span>
                   </div>
+
+                  <div className="flex flex-wrap items-center gap-3 border-t border-surface-600 pt-3">
+                    <button
+                      type="button"
+                      disabled={!voiceSupported}
+                      onClick={() => setVoiceEnabled(enabled => !enabled)}
+                      aria-pressed={voiceEnabled}
+                      aria-label={voiceSupported ? `Voice narration ${voiceEnabled ? 'on' : 'off'}` : 'Voice narration is not supported in this browser'}
+                      className={clsx(
+                        'btn-secondary text-xs px-3 py-2',
+                        voiceEnabled && voiceSupported && 'border-primary-500/60 text-primary-200 bg-primary-900/30',
+                        !voiceSupported && 'opacity-50 cursor-not-allowed',
+                      )}
+                    >
+                      {voiceEnabled && voiceSupported ? <Volume2 size={15} /> : <VolumeX size={15} />}
+                      Voice narration: {voiceEnabled && voiceSupported ? 'On' : 'Off'}
+                    </button>
+                    {voiceSupported ? (
+                      <>
+                        <label className="flex items-center gap-2 text-xs text-gray-400">
+                          Voice speed
+                          <select aria-label="Voice narration speed" value={voiceRate} onChange={event => setVoiceRate(Number(event.target.value))} className="bg-surface-700 border border-surface-600 rounded px-2 py-1 text-gray-200">
+                            <option value={0.75}>0.75×</option>
+                            <option value={1}>1×</option>
+                            <option value={1.25}>1.25×</option>
+                            <option value={1.5}>1.5×</option>
+                          </select>
+                        </label>
+                        <label className="flex items-center gap-2 text-xs text-gray-400">
+                          Volume
+                          <input aria-label="Voice narration volume" type="range" min={0} max={1} step={0.1} value={voiceVolume} onChange={event => setVoiceVolume(Number(event.target.value))} className="w-20 accent-primary-500" />
+                        </label>
+                        <span className="text-xs text-gray-500" aria-live="polite">{voiceStatus === 'speaking' ? 'Speaking' : 'Ready'}</span>
+                      </>
+                    ) : (
+                      <span className="text-xs text-amber-300" role="status">Voice narration is not supported in this browser.</span>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -307,7 +359,7 @@ export default function Visualizer() {
           )}
 
           {activeTab === 'trace' && (
-            <TracePanel events={events} currentStep={step} onJump={setStep} />
+            <TracePanel events={events} currentStep={step} onJump={nextStep => { cancelNarration(); setPlaying(false); setStep(nextStep); }} />
           )}
 
           {activeTab === 'metrics' && (
